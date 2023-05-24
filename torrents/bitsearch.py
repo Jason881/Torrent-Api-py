@@ -27,8 +27,7 @@ class Bitsearch:
                     category = info.find("div").find("a", class_="category").text
                     if not category:
                         continue
-                    stats = info.find("div", class_="stats").find_all("div")
-                    if stats:
+                    if stats := info.find("div", class_="stats").find_all("div"):
                         downloads = stats[0].text
                         size = stats[1].text
                         seeders = stats[2].text.strip()
@@ -46,7 +45,7 @@ class Bitsearch:
                                 "category": category,
                                 "hash": re.search(
                                     r"([{a-f\d,A-F\d}]{32,40})\b", magnet
-                                ).group(0),
+                                )[0],
                                 "magnet": magnet,
                                 "torrent": torrent,
                                 "url": self.BASE_URL + url,
@@ -90,7 +89,7 @@ class Bitsearch:
         async with aiohttp.ClientSession() as session:
             start_time = time.time()
             self.LIMIT = limit
-            url = self.BASE_URL + "/search?q={}&page={}".format(query, page)
+            url = f"{self.BASE_URL}/search?q={query}&page={page}"
             return await self.parser_result(start_time, url, session)
 
     async def parser_result(self, start_time, url, session):
@@ -106,5 +105,5 @@ class Bitsearch:
         async with aiohttp.ClientSession() as session:
             start_time = time.time()
             self.LIMIT = limit
-            url = self.BASE_URL + "/trending"
+            url = f"{self.BASE_URL}/trending"
             return await self.parser_result(start_time, url, session)

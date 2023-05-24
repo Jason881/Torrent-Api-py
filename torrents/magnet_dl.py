@@ -44,7 +44,7 @@ class Magnetdl:
                                     "category": category,
                                     "hash": re.search(
                                         r"([{a-f\d,A-F\d}]{32,40})\b", magnet
-                                    ).group(0),
+                                    )[0],
                                     "magnet": magnet,
                                     "url": self.BASE_URL + url,
                                     "date": date,
@@ -54,16 +54,12 @@ class Magnetdl:
                             break
                 total_results = soup.find("div", id="footer").text.replace(",", "")
                 current_page = int(
-                    (re.search(r"Page\s\d*", total_results).group(0)).replace(
-                        "Page ", ""
-                    )
+                    re.search(r"Page\s\d*", total_results)[0].replace("Page ", "")
                 )
                 total_pages = (
                     int(
-                        (
-                            (re.search(r"Found\s\d*", total_results).group(0)).replace(
-                                "Found ", ""
-                            )
+                        re.search(r"Found\s\d*", total_results)[0].replace(
+                            "Found ", ""
                         )
                     )
                     // 40
@@ -97,7 +93,7 @@ class Magnetdl:
             query = requests.utils.unquote(query)
             query = query.split(" ")
             query = "-".join(query)
-            url = self.BASE_URL + "/{}/{}/se/desc/{}/".format(query[0], query, page)
+            url = f"{self.BASE_URL}/{query[0]}/{query}/se/desc/{page}/"
             return await self.parser_result(start_time, url, session)
 
     async def parser_result(self, start_time, url, session):
@@ -114,11 +110,11 @@ class Magnetdl:
             start_time = time.time()
             self.LIMIT = limit
             if not category:
-                url = self.BASE_URL + "/download/movies/{}".format(page)
+                url = f"{self.BASE_URL}/download/movies/{page}"
             else:
                 if category == "books":
                     category = "e-books"
-                url = self.BASE_URL + "/download/{}/{}/".format(category, page)
+                url = f"{self.BASE_URL}/download/{category}/{page}/"
             return await self.parser_result(start_time, url, session)
 
     #! maximum page in category is 30
