@@ -47,7 +47,7 @@ class PirateBay:
                                 "date": mixed[0].strip(),
                                 "hash": re.search(
                                     r"([{a-f\d,A-F\d}]{32,40})\b", magnet
-                                ).group(0),
+                                )[0],
                                 "magnet": magnet,
                             }
                         )
@@ -69,7 +69,7 @@ class PirateBay:
         async with aiohttp.ClientSession() as session:
             start_time = time.time()
             self.LIMIT = limit
-            url = self.BASE_URL + "/search/{}/{}/99/0".format(query, page)
+            url = f"{self.BASE_URL}/search/{query}/{page}/99/0"
             return await self.parser_result(start_time, url, session)
 
     async def parser_result(self, start_time, url, session):
@@ -85,7 +85,7 @@ class PirateBay:
         async with aiohttp.ClientSession() as session:
             start_time = time.time()
             self.LIMIT = limit
-            url = self.BASE_URL + "/top/all"
+            url = f"{self.BASE_URL}/top/all"
             return await self.parser_result(start_time, url, session)
 
     async def recent(self, category, page, limit):
@@ -93,7 +93,7 @@ class PirateBay:
             start_time = time.time()
             self.LIMIT = limit
             if not category:
-                url = self.BASE_URL + "/recent"
+                url = f"{self.BASE_URL}/recent"
             else:
-                url = self.BASE_URL + "/{}/latest/".format(category)
+                url = f"{self.BASE_URL}/{category}/latest/"
             return await self.parser_result(start_time, url, session)

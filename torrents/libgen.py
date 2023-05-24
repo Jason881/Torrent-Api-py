@@ -27,9 +27,7 @@ class Libgen:
                             if a.text == "One-filetorrent":
                                 if a["href"] != "#":
                                     obj["torrent"] = self.BASE_URL + a["href"]
-                        poster = soup.find_all("img")[0]
-
-                        if poster:
+                        if poster := soup.find_all("img")[0]:
                             obj["poster"] = "http://library.lol" + poster["src"]
                     except:
                         pass
@@ -60,13 +58,11 @@ class Libgen:
                 for tr in trs[1:]:
                     td = tr.find_all("td")
                     id = td[0].text
-                    authors = []
                     author = td[1].find_all("a")
-                    for a in author:
-                        authors.append(a.text.strip())
+                    authors = [a.text.strip() for a in author]
                     name_and_url = td[2].find("a")
                     name = name_and_url.text
-                    url = self.BASE_URL + "/" + name_and_url["href"]
+                    url = f"{self.BASE_URL}/" + name_and_url["href"]
                     list_of_urls.append(url)
                     publisher = td[3].text
                     year = td[4].text
@@ -103,12 +99,7 @@ class Libgen:
         async with aiohttp.ClientSession() as session:
             start_time = time.time()
             self.LIMIT = limit
-            url = (
-                self.BASE_URL
-                + "/search.php?req={}&lg_topic=libgen&open=0&view=simple&res=100&phrase=1&column=def".format(
-                    query
-                )
-            )
+            url = f"{self.BASE_URL}/search.php?req={query}&lg_topic=libgen&open=0&view=simple&res=100&phrase=1&column=def"
             return await self.parser_result(start_time, url, session)
 
     async def parser_result(self, start_time, url, session):

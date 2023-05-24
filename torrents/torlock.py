@@ -37,7 +37,7 @@ class Torlock:
                         obj["magnet"] = magnet
                         obj["hash"] = re.search(
                             r"([{a-f\d,A-F\d}]{32,40})\b", magnet
-                        ).group(0)
+                        )[0]
                         obj["category"] = tm[25].text
                         imgs = soup.select(".tab-content img.img-fluid")
                         if imgs and len(imgs) > 0:
@@ -114,9 +114,7 @@ class Torlock:
         async with aiohttp.ClientSession() as session:
             start_time = time.time()
             self.LIMIT = limit
-            url = self.BASE_URL + "/all/torrents/{}.html?sort=seeds&page={}".format(
-                query, page
-            )
+            url = f"{self.BASE_URL}/all/torrents/{query}.html?sort=seeds&page={page}"
             return await self.parser_result(start_time, url, session, idx=5)
 
     async def parser_result(self, start_time, url, session, idx=0):
@@ -138,7 +136,7 @@ class Torlock:
             else:
                 if category == "books":
                     category = "ebooks"
-                url = self.BASE_URL + "/{}.html".format(category)
+                url = f"{self.BASE_URL}/{category}.html"
             return await self.parser_result(start_time, url, session)
 
     async def recent(self, category, page, limit):
@@ -146,11 +144,11 @@ class Torlock:
             start_time = time.time()
             self.LIMIT = limit
             if not category:
-                url = self.BASE_URL + "/fresh.html"
+                url = f"{self.BASE_URL}/fresh.html"
             else:
                 if category == "books":
                     category = "ebooks"
-                url = self.BASE_URL + "/{}/{}/added/desc.html".format(category, page)
+                url = f"{self.BASE_URL}/{category}/{page}/added/desc.html"
             return await self.parser_result(start_time, url, session)
 
     #! Maybe impelment Search By Category in Future

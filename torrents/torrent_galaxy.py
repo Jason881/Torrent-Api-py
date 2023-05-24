@@ -135,7 +135,7 @@ class TorrentGalaxy:
                                 "imdb_id": imdb_url.split("=")[-1],
                                 "hash": re.search(
                                     r"([{a-f\d,A-F\d}]{32,40})\b", magnet
-                                ).group(0),
+                                )[0],
                                 "magnet": magnet,
                                 "torrent": torrent,
                                 "url": self.BASE_URL + url,
@@ -165,12 +165,7 @@ class TorrentGalaxy:
         async with aiohttp.ClientSession() as session:
             start_time = time.time()
             self.LIMIT = limit
-            url = (
-                self.BASE_URL
-                + "/torrents.php?search=+{}&sort=seeders&order=desc&page={}".format(
-                    query, page - 1
-                )
-            )
+            url = f"{self.BASE_URL}/torrents.php?search=+{query}&sort=seeders&order=desc&page={page - 1}"
             return await self.parser_result(start_time, url, session)
 
     async def get_torrent_by_url(self, torrent_url):
@@ -202,16 +197,11 @@ class TorrentGalaxy:
             start_time = time.time()
             self.LIMIT = limit
             if not category:
-                url = self.BASE_URL + "/latest"
+                url = f"{self.BASE_URL}/latest"
             else:
                 if category == "documentaries":
                     category = "Docus"
-                url = (
-                    self.BASE_URL
-                    + "/torrents.php?parent_cat={}&sort=id&order=desc&page={}".format(
-                        str(category).capitalize(), page - 1
-                    )
-                )
+                url = f"{self.BASE_URL}/torrents.php?parent_cat={str(category).capitalize()}&sort=id&order=desc&page={page - 1}"
             return await self.parser_result(start_time, url, session)
 
     #! Maybe Implemented in Future

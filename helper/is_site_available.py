@@ -254,6 +254,4 @@ def check_if_site_available(site):
         },
     }
 
-    if site in all_sites.keys():
-        return all_sites
-    return False
+    return all_sites if site in all_sites else False
